@@ -35,5 +35,4 @@ class Ship:
 
         # update rect obhect from self.x
         self.rect.x = self.x
-        print( str(self.rect.left) + "  " + str(self.rect.x) + "  " + str(self.rect.right))
         

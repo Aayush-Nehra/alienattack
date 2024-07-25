@@ -31,9 +31,12 @@ class AlienAttack:
     def run_game(self):
         """Start the main loop for the game."""
         while True:
+            #Events
             self._check_events()
+            #Update positons
             self.ship.update()
             self._update_bullet()
+            #Render
             self._update_screen()
             self.clock.tick(60)
 
