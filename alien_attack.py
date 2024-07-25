@@ -3,7 +3,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
-
+from alien import Alien
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -27,6 +27,12 @@ class AlienAttack:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        
+        #Working with Alien
+        self.aliens = pygame.sprite.Group()
+
+        self._create_fleet()
+
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -67,12 +73,26 @@ class AlienAttack:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
 
+    def _create_fleet(self):
+        """Create a fleet of aliens"""
+        alien = Alien(self)
+        alien_width = alien.rect.width
+        
+        current_x = alien_width
+        while current_x < (self.settings.screen_width - 2 * alien_width):
+            new_alien = Alien(self)
+            new_alien.x = current_x
+            new_alien.rect.x = current_x
+            self.aliens.add(new_alien)
+            current_x += 2 * alien_width
+
     def _update_screen(self):
         """Updates images on the screen, and flip to the new screen"""
         self.screen.fill(self.settings.bg_color)
         for bullet in self.bullets.sprites():
              bullet.draw_bullet()
         self.ship.blitme()
+        self.aliens.draw(self.screen)
         pygame.display.flip()
 
     def _fire_bullet(self):
