@@ -41,7 +41,8 @@ class AlienAttack:
             self._check_events()
             #Update positons
             self.ship.update()
-            self._update_bullet()
+            self._update_bullets()
+            self._update_aliens()
             #Render
             self._update_screen()
             self.clock.tick(60)
@@ -81,6 +82,20 @@ class AlienAttack:
         new_alien.rect.y = y_position
         self.aliens.add(new_alien)
 
+    def _check_fleet_edges(self):
+        """Respond appropriately if any alien has reached an edge"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """Drop the entire fleet and change fleet's direction"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed  
+        self.settings.fleet_direction *= -1
+
+
     def _create_fleet(self):
         """Create a fleet of aliens"""
         alien = Alien(self)
@@ -95,6 +110,10 @@ class AlienAttack:
             current_x = alien_width
             current_y += 2 * alien_height
 
+    def _update_aliens(self):
+        """Update the positions of all aliens in the fleet."""
+        self._check_fleet_edges()
+        self.aliens.update()
 
     def _update_screen(self):
         """Updates images on the screen, and flip to the new screen"""
@@ -111,7 +130,7 @@ class AlienAttack:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
     
-    def _update_bullet(self):
+    def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
         self.bullets.update()
         for bullet in self.bullets.copy():
