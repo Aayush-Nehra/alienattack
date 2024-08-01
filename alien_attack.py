@@ -135,9 +135,13 @@ class AlienAttack:
         for bullet in self.bullets.copy():
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
+        self._check_bullet_alien_collisons()
+        
 
-        collisons = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True) 
-
+    def _check_bullet_alien_collisons(self):
+        """Destroy bullet and alien on collision"""
+        collisons = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, True) 
         if not self.aliens:
             #Destory existing bullets and create new fleet
             self.bullets.empty()
