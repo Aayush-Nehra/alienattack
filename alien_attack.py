@@ -95,7 +95,6 @@ class AlienAttack:
             alien.rect.y += self.settings.fleet_drop_speed  
         self.settings.fleet_direction *= -1
 
-
     def _create_fleet(self):
         """Create a fleet of aliens"""
         alien = Alien(self)
@@ -136,6 +135,13 @@ class AlienAttack:
         for bullet in self.bullets.copy():
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
+
+        collisons = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True) 
+
+        if not self.aliens:
+            #Destory existing bullets and create new fleet
+            self.bullets.empty()
+            self._create_fleet()
 
 if __name__ == '__main__':
     #Make a game instance, and run the game
