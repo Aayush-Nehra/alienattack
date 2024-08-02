@@ -1,5 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
+from random import randint
 
 class Alien(Sprite):
     """A class to represent single alien in the fleet"""
@@ -10,7 +11,10 @@ class Alien(Sprite):
         self.settings = ai_game.settings
 
         #Alien Image
-        self.image = pygame.image.load('images/alien.bmp')
+        self.alien_type = "alien" + str(randint(1,5))
+        self.image = pygame.transform.scale(
+            pygame.image.load("images/"+self.alien_type + ".png"), (50,50)
+            )
         self.rect = self.image.get_rect()
 
         #Initial Postion of alien
