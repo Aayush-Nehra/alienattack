@@ -17,7 +17,9 @@ class Ship:
         self.moving_left = False
 
         # Start each new ship at the bottom center of the screen.
-        self.rect.midbottom = self.screen_rect.midbottom
+        # self.rect.midbottom = self.screen_rect.midbottom - (0,self.rect.height)
+        self.rect.x = self.screen_rect.midbottom[0]
+        self.rect.y = self.screen_rect.midbottom[1] - 1.5 * self.rect.height
 
         # Store a float for sips exact horizontal position
         self.x = float(self.rect.x)
@@ -35,4 +37,9 @@ class Ship:
 
         # update rect obhect from self.x
         self.rect.x = self.x
-        
+
+    def center_ship(self):
+        """Center the ship on the screen"""
+        self.rect.x = self.screen_rect.midbottom[0]
+        self.rect.y = self.screen_rect.midbottom[1] - 1.5 * self.rect.height
+        self.x = float(self.rect.x)
