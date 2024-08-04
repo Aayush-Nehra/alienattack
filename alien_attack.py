@@ -3,7 +3,7 @@ from time import sleep
 import pygame
 from settings import Settings
 from game_stats import GameStats
-from ship import Ship
+from ship import Ship,ShooterShip
 from bullet import Bullet
 from alien import Alien
 
@@ -31,7 +31,7 @@ class AlienAttack:
         #Create an instance to store game stats
         self.stats = GameStats(self)
 
-        self.ship = Ship(self)
+        self.ship = ShooterShip(self)
         self.bullets = pygame.sprite.Group()
         
         #Working with Alien
@@ -110,7 +110,7 @@ class AlienAttack:
         alien_width, alien_height = alien.rect.size
         
         current_x, current_y = alien_width, alien_height
-        while current_y < (self.settings.screen_height - 3 * alien_height):
+        while current_y < (self.settings.screen_height - 5 * alien_height):
             while current_x < (self.settings.screen_width - 2 * alien_width):
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
@@ -136,6 +136,7 @@ class AlienAttack:
              bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+        self.draw_ships_remaining()
         pygame.display.flip()
 
     def _fire_bullet(self):
@@ -185,6 +186,16 @@ class AlienAttack:
             if alien.rect.bottom >= self.settings.screen_height:
                 self._ship_hit()
                 break
+
+    def draw_ships_remaining(self):
+        ship = Ship(self)
+        ship.image = pygame.transform.scale(ship.image, self.settings.remaining_ship_size)
+        ship.rect.y = self.settings.screen_height - self.settings.remaining_ship_height
+        ship.rect.x = 0
+        for i in range(0,self.stats.ships_left):
+            ship.blitme()
+            ship.rect.x += self.settings.remaining_ship_width
+
 
 if __name__ == '__main__':
     #Make a game instance, and run the game

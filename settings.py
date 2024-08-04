@@ -17,10 +17,16 @@ class Settings:
 
         #Alien settings
         self.alien_speed = 1.0
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 50
+
         # fleet_direction of 1 represents right and -1 represents left
         self.fleet_direction = 1
         
         #Ship Settings
         self.ship_speed = 1.5
         self.ship_limit = 3
+
+        #Remaining ship
+        self.remaining_ship_height = 30
+        self.remaining_ship_width = 40
+        self.remaining_ship_size = (self.remaining_ship_width, self.remaining_ship_height)

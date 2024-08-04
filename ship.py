@@ -1,4 +1,5 @@
 import pygame
+
 class Ship:
     """A class to manage ship"""
 
@@ -12,21 +13,25 @@ class Ship:
         self.image = pygame.image.load('images/ship.bmp')
         self.rect = self.image.get_rect()
 
+    def blitme(self):
+        """Draw the ship at its current location"""
+        self.screen.blit(self.image, self.rect)
+
+class ShooterShip(Ship):
+    """A class to manage shooter ship"""
+    def __init__(self, ai_game):
+        super().__init__(ai_game)
+
         #Movement flag; start with a ship that's not moving
         self.moving_right = False
         self.moving_left = False
 
-        # Start each new ship at the bottom center of the screen.
-        # self.rect.midbottom = self.screen_rect.midbottom - (0,self.rect.height)
-        self.rect.x = self.screen_rect.midbottom[0]
-        self.rect.y = self.screen_rect.midbottom[1] - 1.5 * self.rect.height
+        # Start each new ship at the bottom center of the screen half ship length up.
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect.y -= self.rect.height/2
 
         # Store a float for sips exact horizontal position
         self.x = float(self.rect.x)
-
-    def blitme(self):
-        """Draw the ship at its current location"""
-        self.screen.blit(self.image, self.rect)
 
     def update(self):
         """Update the ship's position based on the movement flag."""
@@ -40,6 +45,10 @@ class Ship:
 
     def center_ship(self):
         """Center the ship on the screen"""
-        self.rect.x = self.screen_rect.midbottom[0]
-        self.rect.y = self.screen_rect.midbottom[1] - 1.5 * self.rect.height
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect.y -= self.rect.height/2
         self.x = float(self.rect.x)
+
+
+
+ 
