@@ -44,6 +44,7 @@ class AlienAttack:
 
         #Make the play button
         self.play_button = Button(self, "Play")
+        self.game_background = pygame.image.load("images/bg_space.png").convert_alpha()
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -137,13 +138,13 @@ class AlienAttack:
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
         
-        current_x, current_y = alien_width, alien_height
-        while current_y < (self.settings.screen_height - 5 * alien_height):
-            while current_x < (self.settings.screen_width - 2 * alien_width):
+        current_x, current_y = 2*alien_width, alien_height
+        while current_y < (self.settings.screen_height - 7 * alien_height):
+            while current_x < (self.settings.screen_width - 3 * alien_width):
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
             
-            current_x = alien_width
+            current_x = 2 * alien_width
             current_y += 2 * alien_height
 
     def _update_aliens(self):
@@ -159,7 +160,7 @@ class AlienAttack:
 
     def _update_screen(self):
         """Updates images on the screen, and flip to the new screen"""
-        self.screen.fill(self.settings.bg_color)
+        self.screen.blit(self.game_background, (0,0))
         for bullet in self.bullets.sprites():
              bullet.draw_bullet()
         self.ship.blitme()
@@ -168,7 +169,11 @@ class AlienAttack:
 
         #Draw the play button if game is inactive
         if not self.game_active:
+            #Reset settings if game is over
+            self.settings.initialize_dynamic_settings()
             self.play_button.draw_button()
+            
+
         pygame.display.flip()
 
     def _fire_bullet(self):
@@ -193,6 +198,7 @@ class AlienAttack:
             #Destory existing bullets and create new fleet
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _ship_hit(self):
         """Respond to ship being hit by a alien"""
