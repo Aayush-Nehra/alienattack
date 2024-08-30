@@ -143,6 +143,10 @@ class AlienAttack:
                 self.create_level_2_fleet()
             case 3:
                 self.create_level_3_fleet()
+            case 4:
+                self.create_level_4_fleet()
+            case 5:
+                self.create_level_5_fleet()
             case _:
                 self.create_level_1_fleet()
 
@@ -269,30 +273,85 @@ class AlienAttack:
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
         current_x, current_y = alien_width, alien_height
-        alien_rows = 5
+        alien_rows = 8
         for i in range(0, alien_rows):
             for j in range(0, alien_rows-i-1):
-                current_x += 2 * alien_width
+                current_x += alien_width
 
             for j in range(0,(2*i+1)):
                 self._create_alien(current_x, current_y)
+                current_x += alien_width
+
+            current_x = alien_width
+            current_y += 1.5*alien_height
+
+    def create_level_4_fleet(self):
+        #Copied from level 2
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        current_x, current_y = 2 * alien_width, alien_height
+        alien_rows = 7
+        for i in range(1,alien_rows):
+            for j in range(alien_rows-1, i-1, -1):
+                self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
+            current_x = (2 + i) * alien_width
+            current_y += alien_height 
 
+        current_x = current_x-alien_width
+        for i in range(1, alien_rows):
+            for j in range(0,i):
+                self._create_alien(current_x, current_y)
+                current_x += 2*alien_width
+            current_x = (alien_rows-i) * alien_width
+            current_y += alien_height
+    
+    def create_level_5_fleet(self):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        current_y = alien_height
+        alien_rows = 9
+        smaller_fleet_rows = 3
+
+        #group 1
+        for i in range(1, alien_rows):
+            current_x = (alien_rows-i) * alien_width
+            for j in range(0,i):
+                self._create_alien(current_x, current_y)
+                current_x += 2*alien_width
+            current_y += alien_height
+
+        # group 2
+        x2 = current_x - 2 * alien_width
+        y2 = alien_height
+
+        for i in range(0,smaller_fleet_rows):
+            for j in range(smaller_fleet_rows, i, -1):
+                self._create_alien(x2,y2)
+                x2 -= alien_width
+            x2 = current_x - 2 * alien_width
+            y2 += alien_height
+
+        # group 3
+        current_x = 2 * alien_width
+        alien_rows = alien_rows-1
+        for i in range(1,alien_rows-1): # remove -1 for symmetric patters
+            for j in range(alien_rows-1, i-1, -1):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            current_x = (2 + i) * alien_width
+            current_y += alien_height 
+
+        # group 4
+        current_x = alien_width
+        current_y = alien_height
+
+        for i in range(0,smaller_fleet_rows):
+            for j in range(smaller_fleet_rows, i, -1):
+                self._create_alien(current_x,current_y)
+                current_x += alien_width
             current_x = alien_width
-            current_y += 2 * alien_height
-
-        for i in range(0,2):
-            while current_x <= (self.settings.screen_width - alien_width):
-                    self._create_alien(current_x, current_y)
-                    current_x += alien_width
-            current_x = alien_width
-            current_y += 2 * alien_height
-
-        def create_level_4_fleet(self):
-            pass
-
-        def create_level_5_fleet(self):
-            pass
+            current_y += alien_height
 
 if __name__ == '__main__':
     #Make a game instance, and run the game
