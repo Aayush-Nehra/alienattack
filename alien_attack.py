@@ -1,3 +1,4 @@
+import math
 import sys
 from time import sleep
 import pygame
@@ -37,10 +38,10 @@ class AlienAttack:
         
         #Working with Alien
         self.aliens = pygame.sprite.Group()
-        self._create_fleet()
 
         #Start the game in an inactive state
         self.game_active = False
+        self.current_level = 1
 
         #Make the play button
         self.play_button = Button(self, "Play")
@@ -68,7 +69,7 @@ class AlienAttack:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
-        elif event.key == pygame.K_SPACE:
+        elif event.key == pygame.K_SPACE and self.game_active:
             self._fire_bullet()
         elif event.key == pygame.K_p:
             self._start_game()
@@ -77,13 +78,13 @@ class AlienAttack:
         if self.game_active == False:
             self.stats.reset_stats()
             self.game_active = True
-
+            self.current_level = 1
             # get rid of remaining bullets:
             self.bullets.empty()
             self.aliens.empty()
 
             # Creat new fleet and center the ship
-            self._create_fleet()
+            self._create_fleet(self.current_level)
             self.ship.center_ship()
             pygame.mouse.set_visible(False)
 
@@ -133,19 +134,17 @@ class AlienAttack:
             alien.rect.y += self.settings.fleet_drop_speed  
         self.settings.fleet_direction *= -1
 
-    def _create_fleet(self):
-        """Create a fleet of aliens"""
-        alien = Alien(self)
-        alien_width, alien_height = alien.rect.size
-        
-        current_x, current_y = 2*alien_width, alien_height
-        while current_y < (self.settings.screen_height - 7 * alien_height):
-            while current_x < (self.settings.screen_width - 3 * alien_width):
-                self._create_alien(current_x, current_y)
-                current_x += 2 * alien_width
-            
-            current_x = 2 * alien_width
-            current_y += 2 * alien_height
+    def _create_fleet(self, game_level=1):
+        """Create a fleet of aliens for game level"""
+        match game_level:
+            case 1:
+                self.create_level_1_fleet()
+            case 2:
+                self.create_level_2_fleet()
+            case 3:
+                self.create_level_3_fleet()
+            case _:
+                self.create_level_1_fleet()
 
     def _update_aliens(self):
         """Update the positions of all aliens in the fleet."""
@@ -197,8 +196,12 @@ class AlienAttack:
         if not self.aliens:
             #Destory existing bullets and create new fleet
             self.bullets.empty()
-            self._create_fleet()
-            self.settings.increase_speed()
+            self.level_up()
+
+    def level_up(self): 
+        self.current_level += 1
+        self._create_fleet(self.current_level)
+        self.settings.increase_speed()
 
     def _ship_hit(self):
         """Respond to ship being hit by a alien"""
@@ -212,7 +215,7 @@ class AlienAttack:
             self.aliens.empty()
 
             # Create a new fleet and center ship
-            self._create_fleet()
+            self._create_fleet(self.current_level)
             self.ship.center_ship()
 
             #Pause
@@ -236,6 +239,60 @@ class AlienAttack:
             ship.blitme()
             ship.rect.x += self.settings.remaining_ship_width
 
+    def create_level_1_fleet(self):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        
+        current_x, current_y = 2*alien_width, alien_height
+        while current_y < (self.settings.screen_height - 7 * alien_height):
+            while current_x < (self.settings.screen_width - 3 * alien_width):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            
+            current_x = 2 * alien_width
+            current_y += 2 * alien_height
+
+    def create_level_2_fleet(self):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        current_x, current_y = 2 * alien_width, alien_height
+        max_aliens_per_row = int(math.floor(self.settings.screen_width - 4 * alien_width)/(2 * alien_width))
+        alien_rows = 8
+        for i in range(1,alien_rows):
+            for j in range(max_aliens_per_row, i-1, -1):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            current_x = (2 + i) * alien_width
+            current_y += 2 * alien_height 
+
+    def create_level_3_fleet(self):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        current_x, current_y = alien_width, alien_height
+        alien_rows = 5
+        for i in range(0, alien_rows):
+            for j in range(0, alien_rows-i-1):
+                current_x += 2 * alien_width
+
+            for j in range(0,(2*i+1)):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+
+            current_x = alien_width
+            current_y += 2 * alien_height
+
+        for i in range(0,2):
+            while current_x <= (self.settings.screen_width - alien_width):
+                    self._create_alien(current_x, current_y)
+                    current_x += alien_width
+            current_x = alien_width
+            current_y += 2 * alien_height
+
+        def create_level_4_fleet(self):
+            pass
+
+        def create_level_5_fleet(self):
+            pass
 
 if __name__ == '__main__':
     #Make a game instance, and run the game

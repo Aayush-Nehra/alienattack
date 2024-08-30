@@ -9,7 +9,7 @@ class Settings:
         self.bg_color = (230, 230, 230)
 
         # Bullet Settings
-        self.bullet_width = 3
+        self.bullet_width = 80
         self.bullet_height = 15
         self.bullet_color = (255,0,0)
         self.bullets_allowed = 10
@@ -18,7 +18,7 @@ class Settings:
         self.fleet_drop_speed = 10
         
         #Ship Settings
-        self.ship_limit = 3
+        self.ship_limit = 2
 
         #Remaining ship
         self.remaining_ship_height = 30
