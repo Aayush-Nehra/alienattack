@@ -8,7 +8,7 @@ from ship import Ship,ShooterShip
 from bullet import Bullet
 from alien import Alien
 from button import Button
-
+from game_constants import EASY, MEDIUM, HARD, PLAY
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -35,7 +35,7 @@ class AlienAttack:
 
         self.ship = ShooterShip(self)
         self.bullets = pygame.sprite.Group()
-        
+
         #Working with Alien
         self.aliens = pygame.sprite.Group()
 
@@ -43,9 +43,26 @@ class AlienAttack:
         self.game_active = False
         self.current_level = 1
 
-        #Make the play button
-        self.play_button = Button(self, "Play")
+        # Make the play button
+        self.is_play_button_clicked = False
+        self.play_button = Button(self, PLAY, self.screen.get_rect().center)
+
+        # Make difficulty buttons
+        self._create_difficulty_buttons()
+        
+        # Get backgroud for game
         self.game_background = pygame.image.load("images/bg_space.png").convert_alpha()
+
+    def _create_difficulty_buttons(self):
+        """Create easy, medium, and difficult buttons to control game difficulty"""
+        # Creating coordinates for buttons
+        cen_x, cen_y = self.screen.get_rect().center
+        easy_x_pos = (0 + cen_x)/2
+        hard_x_pos = (cen_x + self.settings.screen_width)/2
+
+        self.easy_button = Button(self, EASY, (easy_x_pos, cen_y))
+        self.medium_button = Button(self, MEDIUM, (cen_x, cen_y))
+        self.hard_button = Button(self, HARD, (hard_x_pos, cen_y))
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -71,10 +88,9 @@ class AlienAttack:
             sys.exit()
         elif event.key == pygame.K_SPACE and self.game_active:
             self._fire_bullet()
-        elif event.key == pygame.K_p:
-            self._start_game()
-
-    def _start_game(self):
+        elif event.key == pygame.K_RETURN:
+            self.is_play_button_clicked = True
+    def _start_game(self, game_mode):
         if self.game_active == False:
             self.stats.reset_stats()
             self.game_active = True
@@ -82,17 +98,27 @@ class AlienAttack:
             # get rid of remaining bullets:
             self.bullets.empty()
             self.aliens.empty()
-
+            self.settings.initialize_dynamic_settings(game_mode)
             # Creat new fleet and center the ship
             self._create_fleet(self.current_level)
             self.ship.center_ship()
             pygame.mouse.set_visible(False)
 
-    def _check_play_button(self, mouse_pos):
+    def _check_click_events(self, mouse_pos):
         """Start new game when player clicks play"""
-        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked:
-            self._start_game()
+        game_difficulty = ""
+        if self.play_button.rect.collidepoint(mouse_pos):
+            #Draw difficulty levels if play is clicked
+            self.is_play_button_clicked = True
+        elif self.easy_button.rect.collidepoint(mouse_pos):
+            game_difficulty = EASY
+        elif self.medium_button.rect.collidepoint(mouse_pos):
+            game_difficulty = MEDIUM
+        elif self.hard_button.rect.collidepoint(mouse_pos):
+            game_difficulty = HARD
+        
+        if game_difficulty!="":
+            self._start_game(game_difficulty)
 
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
@@ -111,7 +137,7 @@ class AlienAttack:
                 self._check_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                self._check_click_events(mouse_pos)
 
     def _create_alien(self, x_position, y_position):
         """Create an alien and place it in a row"""
@@ -131,7 +157,7 @@ class AlienAttack:
     def _change_fleet_direction(self):
         """Drop the entire fleet and change fleet's direction"""
         for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.fleet_drop_speed  
+            alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
     def _create_fleet(self, game_level=1):
@@ -173,9 +199,12 @@ class AlienAttack:
         #Draw the play button if game is inactive
         if not self.game_active:
             #Reset settings if game is over
-            self.settings.initialize_dynamic_settings()
-            self.play_button.draw_button()
-            
+            if not self.is_play_button_clicked:
+                self.play_button.draw_button()
+            else:            
+                self.medium_button.draw_button()
+                self.easy_button.draw_button()
+                self.hard_button.draw_button()
 
         pygame.display.flip()
 
@@ -184,7 +213,7 @@ class AlienAttack:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
-    
+
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
         self.bullets.update()
@@ -192,17 +221,17 @@ class AlienAttack:
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
         self._check_bullet_alien_collisons()
-        
+
     def _check_bullet_alien_collisons(self):
         """Destroy bullet and alien on collision"""
         collisons = pygame.sprite.groupcollide(
-            self.bullets, self.aliens, True, True) 
+            self.bullets, self.aliens, True, True)
         if not self.aliens:
             #Destory existing bullets and create new fleet
             self.bullets.empty()
             self.level_up()
 
-    def level_up(self): 
+    def level_up(self):
         self.current_level += 1
         self._create_fleet(self.current_level)
         self.settings.increase_speed()
@@ -226,6 +255,7 @@ class AlienAttack:
             sleep(0.5)
         else:
             self.game_active = False
+            self.is_play_button_clicked = False
             pygame.mouse.set_visible(True)
 
     def _check_aliens_bottom(self):
@@ -246,13 +276,13 @@ class AlienAttack:
     def create_level_1_fleet(self):
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
-        
+
         current_x, current_y = 2*alien_width, alien_height
         while current_y < (self.settings.screen_height - 7 * alien_height):
             while current_x < (self.settings.screen_width - 3 * alien_width):
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
-            
+
             current_x = 2 * alien_width
             current_y += 2 * alien_height
 
@@ -267,7 +297,7 @@ class AlienAttack:
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
             current_x = (2 + i) * alien_width
-            current_y += 2 * alien_height 
+            current_y += 2 * alien_height
 
     def create_level_3_fleet(self):
         alien = Alien(self)
@@ -296,7 +326,7 @@ class AlienAttack:
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
             current_x = (2 + i) * alien_width
-            current_y += alien_height 
+            current_y += alien_height
 
         current_x = current_x-alien_width
         for i in range(1, alien_rows):
@@ -305,7 +335,7 @@ class AlienAttack:
                 current_x += 2*alien_width
             current_x = (alien_rows-i) * alien_width
             current_y += alien_height
-    
+
     def create_level_5_fleet(self):
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
@@ -340,7 +370,7 @@ class AlienAttack:
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
             current_x = (2 + i) * alien_width
-            current_y += alien_height 
+            current_y += alien_height
 
         # group 4
         current_x = alien_width
@@ -357,4 +387,3 @@ if __name__ == '__main__':
     #Make a game instance, and run the game
     ai = AlienAttack()
     ai.run_game()
-            
