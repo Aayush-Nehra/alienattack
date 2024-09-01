@@ -9,6 +9,7 @@ from bullet import Bullet
 from alien import Alien
 from button import Button
 from game_constants import EASY, MEDIUM, HARD, PLAY
+from scoreboard import Scoreboard
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -30,8 +31,10 @@ class AlienAttack:
         # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
 
-        #Create an instance to store game stats
+        #Create an instance to store game stats,
+        #   and create a scoreboard.
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.ship = ShooterShip(self)
         self.bullets = pygame.sprite.Group()
@@ -93,6 +96,7 @@ class AlienAttack:
     def _start_game(self, game_mode):
         if self.game_active == False:
             self.stats.reset_stats()
+            self.sb.prep_score()
             self.game_active = True
             self.current_level = 1
             # get rid of remaining bullets:
@@ -107,7 +111,7 @@ class AlienAttack:
     def _check_click_events(self, mouse_pos):
         """Start new game when player clicks play"""
         game_difficulty = ""
-        if self.play_button.rect.collidepoint(mouse_pos):
+        if self.play_button.rect.collidepoint(mouse_pos) and self.is_play_button_clicked == False:
             #Draw difficulty levels if play is clicked
             self.is_play_button_clicked = True
         elif self.easy_button.rect.collidepoint(mouse_pos):
@@ -196,6 +200,9 @@ class AlienAttack:
         self.aliens.draw(self.screen)
         self.draw_ships_remaining()
 
+        #Draw the score information
+        self.sb.show_score()
+
         #Draw the play button if game is inactive
         if not self.game_active:
             #Reset settings if game is over
@@ -226,6 +233,12 @@ class AlienAttack:
         """Destroy bullet and alien on collision"""
         collisons = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
+        
+        if collisons:
+            for aliens in collisons.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+                self.sb.prep_score()
+
         if not self.aliens:
             #Destory existing bullets and create new fleet
             self.bullets.empty()
@@ -340,7 +353,7 @@ class AlienAttack:
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
         current_y = alien_height
-        alien_rows = 9
+        alien_rows = 8
         smaller_fleet_rows = 3
 
         #group 1
