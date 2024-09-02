@@ -40,11 +40,11 @@ class Settings:
             case "Medium":
                 self.ship_speed = 5.0
                 self.bullet_speed = 4.0
-                self.alien_speed = 1.1
+                self.alien_speed = 1.5
             case "Hard":
                 self.ship_speed = 6.0
                 self.bullet_speed = 4.0
-                self.alien_speed = 1.15
+                self.alien_speed = 2.0
 
         # Scoring settings
         self.alien_points = 50
@@ -55,6 +55,6 @@ class Settings:
         """Increase speed settings and alien point values."""
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
-        self.alien_speed *= self.alien_speed
+        self.alien_speed *= self.speedup_scale
         
         self.alien_points = int(self.alien_points * self.score_scale)
