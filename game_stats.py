@@ -11,6 +11,7 @@ class GameStats:
         """Initialize stats that can change during game"""
         self.ships_left = self.settings.ship_limit
         self.score = 0
+        self.level = 1
 
     def read_high_score(self):
         path = Path('highscore.txt')

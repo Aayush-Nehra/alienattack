@@ -44,7 +44,6 @@ class AlienAttack:
 
         #Start the game in an inactive state
         self.game_active = False
-        self.current_level = 1
 
         # Make the play button
         self.is_play_button_clicked = False
@@ -97,14 +96,14 @@ class AlienAttack:
         if self.game_active == False:
             self.stats.reset_stats()
             self.sb.prep_score()
+            self.sb.prep_level()
             self.game_active = True
-            self.current_level = 1
             # get rid of remaining bullets:
             self.bullets.empty()
             self.aliens.empty()
             self.settings.initialize_dynamic_settings(game_mode)
             # Creat new fleet and center the ship
-            self._create_fleet(self.current_level)
+            self._create_fleet(self.stats.level)
             self.ship.center_ship()
             pygame.mouse.set_visible(False)
 
@@ -246,8 +245,9 @@ class AlienAttack:
             self.level_up()
 
     def level_up(self):
-        self.current_level += 1
-        self._create_fleet(self.current_level)
+        self.stats.level += 1
+        self.sb.prep_level()
+        self._create_fleet(self.stats.level)
         self.settings.increase_speed()
 
     def _ship_hit(self):
@@ -261,7 +261,7 @@ class AlienAttack:
             self.aliens.empty()
 
             # Create a new fleet and center ship
-            self._create_fleet(self.current_level)
+            self._create_fleet(self.stats.level)
             self.ship.center_ship()
 
             #Pause
