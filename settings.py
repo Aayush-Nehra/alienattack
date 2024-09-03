@@ -30,21 +30,24 @@ class Settings:
         # How quickly the alien point values increase
         self.score_scale = 1.5
 
+        #Default stats
+        self.default_high_score = 0
+
     def initialize_dynamic_settings(self, game_mode):
         """Initialize the settings that can change throught the game"""
         match game_mode:
             case "Easy":
                 self.ship_speed = 4.0
-                self.bullet_speed = 4.0
+                self.bullet_speed = 6.0
                 self.alien_speed = 1.0
             case "Medium":
                 self.ship_speed = 5.0
-                self.bullet_speed = 4.0
+                self.bullet_speed = 6.0
                 self.alien_speed = 1.5
             case "Hard":
                 self.ship_speed = 6.0
-                self.bullet_speed = 4.0
-                self.alien_speed = 2.0
+                self.bullet_speed = 6.0
+                self.alien_speed = 3.0
 
         # Scoring settings
         self.alien_points = 50

@@ -238,6 +238,7 @@ class AlienAttack:
             for aliens in collisons.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
                 self.sb.prep_score()
+                self.sb.check_highscore()
 
         if not self.aliens:
             #Destory existing bullets and create new fleet
@@ -251,7 +252,6 @@ class AlienAttack:
 
     def _ship_hit(self):
         """Respond to ship being hit by a alien"""
-        print("Ship Hit!")
         if self.stats.ships_left > 0:
             # Decrement ships left
             self.stats.ships_left -= 1
@@ -267,6 +267,7 @@ class AlienAttack:
             #Pause
             sleep(0.5)
         else:
+            self.stats.save_high_score()
             self.game_active = False
             self.is_play_button_clicked = False
             pygame.mouse.set_visible(True)
