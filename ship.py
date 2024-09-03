@@ -11,7 +11,7 @@ class Ship:
 
         # Load the ship image and get its rect
         self.image = pygame.transform.scale(
-            pygame.image.load('images/player.png'), (60,45))
+            pygame.image.load('images/player.png').convert_alpha(), (60,45))
         self.rect = self.image.get_rect()
 
     def blitme(self):

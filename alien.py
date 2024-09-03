@@ -13,7 +13,7 @@ class Alien(Sprite):
         #Alien Image
         self.alien_type = "alien" + str(randint(1,5))
         self.image = pygame.transform.scale(
-            pygame.image.load("images/"+self.alien_type + ".png"), (50,50)
+            pygame.image.load("images/"+self.alien_type + ".png").convert_alpha(), (50,50)
             )
         self.rect = self.image.get_rect()
 
