@@ -29,7 +29,7 @@ class ShooterShip(Ship):
 
         # Start each new ship at the bottom center of the screen half ship length up.
         self.rect.midbottom = self.screen_rect.midbottom
-        self.rect.y -= self.rect.height/2
+        self.rect.y -= self.rect.height - 15
 
         # Store a float for sips exact horizontal position
         self.x = float(self.rect.x)
@@ -47,7 +47,7 @@ class ShooterShip(Ship):
     def center_ship(self):
         """Center the ship on the screen"""
         self.rect.midbottom = self.screen_rect.midbottom
-        self.rect.y -= self.rect.height/2
+        self.rect.y -= self.rect.height - 15
         self.x = float(self.rect.x)
 
 
