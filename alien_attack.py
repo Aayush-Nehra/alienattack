@@ -10,6 +10,7 @@ from alien import Alien
 from button import Button
 from game_constants import EASY, MEDIUM, HARD, PLAY
 from scoreboard import Scoreboard
+from text_renderer import TextRenderer
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -51,6 +52,7 @@ class AlienAttack:
 
         # Make difficulty buttons
         self._create_difficulty_buttons()
+        self.select_difficulty_text = TextRenderer(self, "SELECT DIFFICULTY")
         
         # Get backgroud for game
         self.game_background = pygame.image.load("images/bg_space.png").convert_alpha()
@@ -167,6 +169,7 @@ class AlienAttack:
 
     def _create_fleet(self, game_level=1):
         """Create a fleet of aliens for game level"""
+        game_level %= 6
         match game_level:
             case 1:
                 self.create_level_1_fleet()
@@ -209,7 +212,8 @@ class AlienAttack:
             #Reset settings if game is over
             if not self.is_play_button_clicked:
                 self.play_button.draw_button()
-            else:            
+            else:
+                self.select_difficulty_text.render_text()            
                 self.medium_button.draw_button()
                 self.easy_button.draw_button()
                 self.hard_button.draw_button()
