@@ -11,6 +11,7 @@ from button import Button
 from game_constants import EASY, MEDIUM, HARD, PLAY
 from scoreboard import Scoreboard
 from text_renderer import TextRenderer
+import sound_effects as se
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -95,6 +96,7 @@ class AlienAttack:
             self._fire_bullet()
         elif event.key == pygame.K_RETURN:
             self.is_play_button_clicked = True
+    
     def _start_game(self, game_mode):
         if self.game_active == False:
             self.stats.reset_stats()
@@ -225,6 +227,7 @@ class AlienAttack:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            se.bullet_sound.play()
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -242,8 +245,9 @@ class AlienAttack:
         if collisons:
             for aliens in collisons.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
-                self.sb.prep_score()
-                self.sb.check_highscore()
+            self.sb.prep_score()
+            self.sb.check_highscore()
+            se.alien_hit_sound.play()
 
         if not self.aliens:
             #Destory existing bullets and create new fleet
