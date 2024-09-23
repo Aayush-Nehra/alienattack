@@ -1,5 +1,6 @@
-Alien Attack Game - README
-Table of Contents
+# Alien Attack Game
+
+## Table of Contents
 1. [Introduction](#introduction)
 2. [Gameplay](#gameplay)
 3. [Features](#features)
