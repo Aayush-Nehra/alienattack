@@ -11,7 +11,7 @@ from button import Button
 from game_constants import EASY, MEDIUM, HARD, PLAY
 from scoreboard import Scoreboard
 from text_renderer import TextRenderer
-import sound_effects as se
+import sound_effects as sound_effect
 
 class AlienAttack:
     """Overall class to manage game assets and behavior."""
@@ -99,6 +99,7 @@ class AlienAttack:
     
     def _start_game(self, game_mode):
         if self.game_active == False:
+            sound_effect.start_game_sound.stop()
             self.stats.reset_stats()
             self.sb.prep_score()
             self.sb.prep_level()
@@ -114,15 +115,21 @@ class AlienAttack:
 
     def _check_click_events(self, mouse_pos):
         """Start new game when player clicks play"""
+        def _play_select_option_sound():
+            sound_effect.channel1.play(sound_effect.select_sound)
         game_difficulty = ""
         if self.play_button.rect.collidepoint(mouse_pos) and self.is_play_button_clicked == False:
             #Draw difficulty levels if play is clicked
+            _play_select_option_sound()
             self.is_play_button_clicked = True
         elif self.easy_button.rect.collidepoint(mouse_pos):
+            _play_select_option_sound()
             game_difficulty = EASY
         elif self.medium_button.rect.collidepoint(mouse_pos):
+            _play_select_option_sound()
             game_difficulty = MEDIUM
         elif self.hard_button.rect.collidepoint(mouse_pos):
+            _play_select_option_sound()
             game_difficulty = HARD
         
         if game_difficulty!="":
@@ -211,6 +218,8 @@ class AlienAttack:
 
         #Draw the play button if game is inactive
         if not self.game_active:
+            #Play theme sound while game is inactive
+            sound_effect.start_game_sound.play()
             #Reset settings if game is over
             if not self.is_play_button_clicked:
                 self.play_button.draw_button()
@@ -227,7 +236,7 @@ class AlienAttack:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
-            se.bullet_sound.play()
+            sound_effect.bullet_sound.play()
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -247,7 +256,7 @@ class AlienAttack:
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
             self.sb.check_highscore()
-            se.alien_hit_sound.play()
+            sound_effect.alien_hit_sound.play()
 
         if not self.aliens:
             #Destory existing bullets and create new fleet
